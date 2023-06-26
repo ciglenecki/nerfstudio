@@ -89,7 +89,7 @@ def eval_setup(
 
     # TODO: matej, this is their weird line
     config.pipeline.datamanager._target = all_methods[config.method_name].pipeline.datamanager._target
-    
+
     # load checkpointed information
     if load_ckpt is not None:
         config.load_ckpt = load_ckpt
@@ -107,10 +107,10 @@ def eval_setup(
 
     # load checkpoints from wherever they were saved
     # TODO: expose the ability to choose an arbitrary checkpoint
-    
+
     # TODO: matej, my old line
     # config.pipeline.datamanager.eval_image_indices = None
-    
+
     # TODO: their new lines
     config.load_dir = config.get_checkpoint_dir()
     if isinstance(config.pipeline.datamanager, VanillaDataManagerConfig):

@@ -104,7 +104,6 @@ class Nerfstudio(DataParser):
         mask_filenames = []
         depth_filenames = []
         poses = []
-        num_skipped_image_filenames = 0
 
         fx_fixed = "fl_x" in meta
         fy_fixed = "fl_y" in meta

@@ -398,6 +398,7 @@ class VanillaDataManager(DataManager, Generic[TDataset]):
 
         self.train_dataset = self.create_train_dataset()
         self.eval_dataset = self.create_eval_dataset()
+        self.exclude_batch_keys_from_device = self.train_dataset.exclude_batch_keys_from_device
 
         # TODO: matej start
         self.full_dataset = self.create_full_dataset()

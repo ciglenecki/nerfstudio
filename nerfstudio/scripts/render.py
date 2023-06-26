@@ -42,6 +42,7 @@ from rich.progress import (
     Progress,
     TaskProgressColumn,
     TextColumn,
+    TimeElapsedColumn,
     TimeRemainingColumn,
 )
 from rich.table import Table
