@@ -23,6 +23,9 @@ downscale_factor: Optional[int] = None
 CONSOLE = Console(width=120, no_color=True)
 
 
+"""Function used for rendering the scene. It is used in the existing raymarching code."""
+
+
 def generate_dataparser_outputs_static(
     data_or_transforms: Path,
     indices_file: Path | None,

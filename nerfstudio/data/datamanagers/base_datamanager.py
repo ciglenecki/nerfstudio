@@ -406,7 +406,6 @@ class VanillaDataManager(DataManager, Generic[TDataset]):
         if self.config.train_size_initial is None:
             self.config.train_size_initial = len(self.train_dataset)
         # TODO: matej end
-        self.exclude_batch_keys_from_device = self.train_dataset.exclude_batch_keys_from_device
 
         if self.train_dataparser_outputs is not None:
             cameras = self.train_dataparser_outputs.cameras
