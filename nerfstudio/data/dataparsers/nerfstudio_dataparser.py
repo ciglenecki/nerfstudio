@@ -124,7 +124,7 @@ class Nerfstudio(DataParser):
         height = []
         width = []
         distort = []
-
+        num_skipped_image_filenames = 0
         for frame in meta["frames"]:
             filepath = PurePath(frame["file_path"])
             # TODO: matej
