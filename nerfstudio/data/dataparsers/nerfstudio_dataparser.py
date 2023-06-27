@@ -65,7 +65,8 @@ class NerfstudioDataParserConfig(DataParserConfig):
     """The method to use to center the poses."""
     auto_scale_poses: bool = True
     """Whether to automatically scale the poses to fit in +/- 1 bounding box."""
-    train_split_fraction: float = 0.5  # TODO: this was 0.9
+    train_split_fraction: float = 0.9  # TODO: this was 0.9
+    # train_split_fraction: float = 0.5  # TODO: this was 0.9
     """The percent of images to use for training. The remaining images are for eval."""
     depth_unit_scale_factor: float = 1e-3
     """Scales the depth values to meters. Default value is 0.001 for a millimeter to meter conversion."""
@@ -259,7 +260,7 @@ class Nerfstudio(DataParser):
                 indices = np.array(indices, dtype=np.int32)
             else:
                 raise RuntimeError(f"The dataset's list of filenames for split {split} is missing.")
-            # else:
+        else:
             # filter image_filenames and poses based on train/eval split percentage
             num_images = len(image_filenames)
             num_train_images = math.ceil(num_images * self.config.train_split_fraction)

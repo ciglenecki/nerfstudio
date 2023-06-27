@@ -24,6 +24,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+import torch
 import tyro
 
 from nerfstudio.scripts.my_utils import (
@@ -89,6 +90,7 @@ class ComputePSNR:
             CONSOLE.print(f"Saved results to: {self.output_path}")
             del pipeline
             del config
+            torch.cuda.empty_cache()
 
 
 def entrypoint():
