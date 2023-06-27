@@ -174,7 +174,7 @@ class Pipeline(nn.Module):
 
     @abstractmethod
     @profiler.time_function
-    def get_average_eval_image_metrics(self, step: Optional[int] = None):
+    def get_average_eval_image_metrics(self, step: Optional[int] = None, agg_only: bool = True):
         """Iterate over all the images in the eval dataset and get the average."""
 
     def load_pipeline(self, loaded_state: Dict[str, Any], step: int) -> None:
@@ -341,16 +341,20 @@ class VanillaPipeline(Pipeline):
         return metrics_dict, images_dict
 
     @profiler.time_function
-    def get_average_eval_image_metrics(self, step: Optional[int] = None):
+    def get_average_eval_image_metrics(self, step: Optional[int] = None, agg_only: bool = True):
         """Iterate over all the images in the eval dataset and get the average.
 
         Returns:
             metrics_dict: dictionary of metrics
         """
         self.eval()
-        metrics_dict_list = []
+        metrics_dict_dict = {"images": {}}
         assert isinstance(self.datamanager, VanillaDataManager)
         num_images = len(self.datamanager.fixed_indices_eval_dataloader)
+        image_filenames = self.datamanager.dataparser.get_dataparser_outputs(
+            split=self.datamanager.test_split
+        ).image_filenames
+
         with Progress(
             TextColumn("[progress.description]{task.description}"),
             BarColumn(),
@@ -359,8 +363,12 @@ class VanillaPipeline(Pipeline):
             transient=True,
         ) as progress:
             task = progress.add_task("[green]Evaluating all eval images...", total=num_images)
-            for camera_ray_bundle, batch in tqdm.tqdm(self.datamanager.fixed_indices_eval_dataloader, total=num_images):
+            for i, (camera_ray_bundle, batch) in tqdm.tqdm(
+                enumerate(self.datamanager.fixed_indices_eval_dataloader), total=num_images
+            ):
                 # time this the following line
+                image_idx = batch["image_idx"]
+                image_filename = str(image_filenames[image_idx])
                 inner_start = time()
                 height, width = camera_ray_bundle.shape
                 num_rays = height * width
@@ -371,16 +379,36 @@ class VanillaPipeline(Pipeline):
                 fps_str = "fps"
                 assert fps_str not in metrics_dict
                 metrics_dict[fps_str] = metrics_dict["num_rays_per_sec"] / (height * width)
-                metrics_dict_list.append(metrics_dict)
+
+                # TODO matej
+                # metrics_dict["filename"] = image_filename
+                # is_test = "test" in image_filename
+                # metrics_dict["split"] = "test" if is_test else "eval"
+
+                metrics_dict_dict["images"][image_filename] = metrics_dict
                 progress.advance(task)
-        # average the metrics list
-        metrics_dict = {}
-        for key in metrics_dict_list[0].keys():
-            metrics_dict[key] = float(
-                torch.mean(torch.tensor([metrics_dict[key] for metrics_dict in metrics_dict_list]))
-            )
+
         self.train()
-        return metrics_dict
+
+        # average the metrics list
+        # TODO: matej commented
+        agg_metrics = {}
+
+        metrics_dict_values = list(metrics_dict_dict["images"].values())
+        example_entry = metrics_dict_values[0]
+        for key in example_entry.keys():
+            if key == "images":
+                continue
+            agg_metrics[key] = float(
+                torch.mean(torch.tensor([metrics_dict[key] for metrics_dict in metrics_dict_values]))
+            )
+
+        if agg_only:
+            return agg_metrics
+
+        metrics_dict_dict.update(agg_metrics)
+
+        return metrics_dict_dict
 
     def load_pipeline(self, loaded_state: Dict[str, Any], step: int) -> None:
         """Load the checkpoint from the given path

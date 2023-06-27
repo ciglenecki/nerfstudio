@@ -370,6 +370,7 @@ class VanillaDataManager(DataManager, Generic[TDataset]):
     train_dataset: TDataset
     eval_dataset: TDataset
     train_dataparser_outputs: DataparserOutputs
+    eval_dataparser_outputs: DataparserOutputs
     train_pixel_sampler: Optional[PixelSampler] = None
     eval_pixel_sampler: Optional[PixelSampler] = None
 
@@ -399,6 +400,8 @@ class VanillaDataManager(DataManager, Generic[TDataset]):
             self.dataparser.downscale_factor = 1  # Avoid opening images
         self.includes_time = self.dataparser.includes_time
         self.train_dataparser_outputs: DataparserOutputs = self.dataparser.get_dataparser_outputs(split="train")
+
+        self.eval_dataparser_outputs: DataparserOutputs = self.dataparser.get_dataparser_outputs(split="val")
 
         self.train_dataset = self.create_train_dataset()
         self.eval_dataset = self.create_eval_dataset()

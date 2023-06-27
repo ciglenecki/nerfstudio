@@ -22,6 +22,7 @@ import json
 import traceback
 from dataclasses import dataclass
 from pathlib import Path
+from typing import Any
 
 import tyro
 
@@ -47,42 +48,47 @@ class ComputePSNR:
 
     def main(self) -> None:
         """Main function."""
-        config, pipeline, checkpoint_path, _ = eval_setup(
-            self.load_config,
-            load_ckpt=self.load_ckpt,
-            indices_file=None,
-        )
-        assert self.output_path.suffix == ".json"
-        self.output_path.parent.mkdir(parents=True, exist_ok=True)
+        for split in ["val", "test"]:
+            # TODO: edit test mode to "test" and "eval" to aggregate results
+            config, pipeline, checkpoint_path, _ = eval_setup(
+                self.load_config,
+                test_mode=split,
+                load_ckpt=self.load_ckpt,
+                indices_file=None,
+            )
+            out_name = f"{checkpoint_path.stem}_metrics_{split}.json"
+            self.output_path = Path(self.load_ckpt.parent, out_name)
+            assert self.output_path.suffix == ".json"
+            self.output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        step = get_step_from_ckpt_path(checkpoint_path)
-        sequence_size = (
-            get_sequence_size_from_experiment(config.experiment_name) if "_n_" in config.experiment_name else None
-        )
+            step = get_step_from_ckpt_path(checkpoint_path)
+            sequence_size = (
+                get_sequence_size_from_experiment(config.experiment_name) if "_n_" in config.experiment_name else None
+            )
 
-        benchmark_info = {
-            "experiment_name": config.experiment_name,
-            "step": step,
-            "sequence_size": sequence_size,
-            "method_name": config.method_name,
-            "checkpoint_path": str(checkpoint_path),
-        }
+            benchmark_info = {
+                "experiment_name": config.experiment_name,
+                "step": step,
+                "sequence_size": sequence_size,
+                "method_name": config.method_name,
+                "checkpoint_path": str(checkpoint_path),
+            }
 
-        scene_diverged = False
-        try:  # Get the output and define the names to save to
-            metrics_dict = pipeline.get_average_eval_image_metrics()
-            benchmark_info.update(metrics_dict)
-        except SceneDiverged as e:
-            traceback.print_exc()
-            print(e)
-            scene_diverged = True
+            scene_diverged = False
+            try:  # Get the output and define the names to save to
+                metrics_dict: dict[str, dict[str, Any]] = pipeline.get_average_eval_image_metrics(agg_only=False)
+                benchmark_info.update(metrics_dict)
+            except SceneDiverged as e:
+                traceback.print_exc()
+                print(e)
+                scene_diverged = True
 
-        benchmark_info.update({"scene_diverged": scene_diverged})
-        # Save output to output file
-        self.output_path.write_text(json.dumps(benchmark_info, indent=2), "utf8")
-        CONSOLE.print(f"Saved results to: {self.output_path}")
-        del pipeline
-        del config
+            benchmark_info.update({"scene_diverged": scene_diverged})
+            # Save output to output file
+            self.output_path.write_text(json.dumps(benchmark_info, indent=4), "utf8")
+            CONSOLE.print(f"Saved results to: {self.output_path}")
+            del pipeline
+            del config
 
 
 def entrypoint():
