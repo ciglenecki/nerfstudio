@@ -27,8 +27,10 @@ import yaml
 
 from nerfstudio.configs.method_configs import all_methods
 from nerfstudio.data.datamanagers.base_datamanager import VanillaDataManagerConfig
-from nerfstudio.engine.trainer import TrainerConfig
+from nerfstudio.engine.trainer import Trainer, TrainerConfig
+from nerfstudio.models.nerfacto import NerfactoModel
 from nerfstudio.pipelines.base_pipeline import Pipeline
+from nerfstudio.scripts.my_utils import get_step_from_ckpt_path
 from nerfstudio.utils.rich_utils import CONSOLE
 
 

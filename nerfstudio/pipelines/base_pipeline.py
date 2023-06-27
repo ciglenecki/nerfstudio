@@ -25,6 +25,7 @@ from typing import Any, Dict, List, Literal, Mapping, Optional, Tuple, Type, Uni
 
 import torch
 import torch.distributed as dist
+import tqdm
 from rich.progress import (
     BarColumn,
     MofNCompleteColumn,
@@ -33,9 +34,9 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 from torch import nn
+from torch.cuda.amp.grad_scaler import GradScaler
 from torch.nn import Parameter
 from torch.nn.parallel import DistributedDataParallel as DDP
-from torch.cuda.amp.grad_scaler import GradScaler
 
 from nerfstudio.configs import base_config as cfg
 from nerfstudio.data.datamanagers.base_datamanager import (
@@ -358,7 +359,7 @@ class VanillaPipeline(Pipeline):
             transient=True,
         ) as progress:
             task = progress.add_task("[green]Evaluating all eval images...", total=num_images)
-            for camera_ray_bundle, batch in self.datamanager.fixed_indices_eval_dataloader:
+            for camera_ray_bundle, batch in tqdm.tqdm(self.datamanager.fixed_indices_eval_dataloader, total=num_images):
                 # time this the following line
                 inner_start = time()
                 height, width = camera_ray_bundle.shape

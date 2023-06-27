@@ -204,12 +204,15 @@ class Nerfstudio(DataParser):
                 SPLIT_MODE_ALL,
                 "train",
                 "val",
+                "test",
             ], f"Split can't be '{split}'. If it can be, handle that case."
 
             if split in ["val"]:
                 split_strategy = ["val"]
             elif split in ["train"]:
                 split_strategy = ["train"]
+            elif split in ["test"]:
+                split_strategy = ["test"]
             elif split in [SPLIT_MODE_ALL]:
                 split_strategy = ["train", "val", "test"]
                 # split_strategy = ["train", "val", "test"]

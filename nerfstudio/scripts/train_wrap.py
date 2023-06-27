@@ -102,6 +102,7 @@ def main():
             if config.pipeline.datamanager.dataparser.indices_file is not None:
                 indices_file_name = Path(config.pipeline.datamanager.dataparser.indices_file).stem
                 config.experiment_name += f"_{indices_file_name}"
+            config.experiment_name += f"-{config.method_name}"
             config.relative_model_dir = Path(".")  # don't save to nerfstudio_models
             config.viewer.quit_on_train_completion = True
 

@@ -27,6 +27,10 @@ from nerfstudio.utils import colors
 Colormaps = Literal["default", "turbo", "viridis", "magma", "inferno", "cividis", "gray", "pca"]
 
 
+class SceneDiverged(ValueError):
+    pass
+
+
 @dataclass(frozen=True)
 class ColormapOptions:
     """Options for colormap"""
