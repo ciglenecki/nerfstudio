@@ -11,8 +11,9 @@ import json
 from copy import deepcopy
 from pathlib import Path
 
-import nerfstudio.scripts.train as train
 import tyro
+
+import nerfstudio.scripts.train as train
 from nerfstudio.configs.method_configs import AnnotatedBaseConfigUnion, MyTrainerConf
 from nerfstudio.scripts.my_utils import *
 
@@ -87,8 +88,8 @@ def main():
             prepare_args = []
             prepare_args.insert(0, model)
             prepare_args.extend(model_args)
-            if model == "nerfacto":
-                prepare_args.append("nerfstudio-data")
+            # if model == "tensorf":
+            prepare_args.append("nerfstudio-data")
             prepare_args.extend(["--data", dataset_path])
             prepare_args.extend(data_args)
 
