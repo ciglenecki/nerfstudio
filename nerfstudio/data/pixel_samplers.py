@@ -86,6 +86,10 @@ class PixelSampler:
             keep_full_image: whether or not to include a reference to the full image in returned batch
         """
 
+        # NOTE matej pixel samplanje
+        # uzmu sve slike (u batchu) i onda randomly samplaju određene pixele iz tih slika
+        # uzmu po 1 pixel iz svake slike (kamera index, y, x)
+
         device = batch["image"].device
         num_images, image_height, image_width, _ = batch["image"].shape
 

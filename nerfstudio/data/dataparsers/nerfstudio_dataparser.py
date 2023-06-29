@@ -237,7 +237,7 @@ class Nerfstudio(DataParser):
                 _indices.append(i)
 
             indices = np.array(sorted(_indices), dtype=np.int64)
-        if f"{split}_filenames" in meta:
+        elif f"{split}_filenames" in meta:
             # Validate split first
             split_filenames = set(self._get_fname(Path(x), data_dir) for x in meta[f"{split}_filenames"])
             unmatched_filenames = split_filenames.difference(image_filenames)

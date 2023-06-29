@@ -495,6 +495,7 @@ class Cameras(TensorDataclass):
         distortion_params_delta: Optional[Float[Tensor, "*num_rays 6"]] = None,
         disable_distortion: bool = False,
     ) -> RayBundle:
+        # TODO matej check
         """Generates rays for the given camera indices and coords where self isn't jagged
 
         This is a fairly complex function, so let's break this down slowly.
