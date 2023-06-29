@@ -137,6 +137,7 @@ class Nerfstudio(DataParser):
             if indices_json is not None:
                 indices_json_key = str(Path("images", fname.name))
                 if indices_json_key not in indices_json or indices_json[indices_json_key] == "ignore":
+                    CONSOLE.log(f"Skiping image {str(fname)} because it has ignore tag.")
                     num_skipped_image_filenames += 1
                     continue
 
@@ -237,7 +238,7 @@ class Nerfstudio(DataParser):
                 _indices.append(i)
 
             indices = np.array(sorted(_indices), dtype=np.int64)
-        if f"{split}_filenames" in meta:
+        elif f"{split}_filenames" in meta:
             # Validate split first
             split_filenames = set(self._get_fname(Path(x), data_dir) for x in meta[f"{split}_filenames"])
             unmatched_filenames = split_filenames.difference(image_filenames)
