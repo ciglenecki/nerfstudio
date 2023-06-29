@@ -88,7 +88,8 @@ def main():
             prepare_args = []
             prepare_args.insert(0, model)
             prepare_args.extend(model_args)
-            prepare_args.append("nerfstudio-data")
+            if model == "tensorf":
+                prepare_args.append("nerfstudio-data")
             prepare_args.extend(["--data", dataset_path])
             prepare_args.extend(data_args)
 

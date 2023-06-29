@@ -18,7 +18,9 @@ eval.py
 """
 from __future__ import annotations
 
+import gc
 import json
+import time
 import traceback
 from dataclasses import dataclass
 from pathlib import Path
@@ -88,9 +90,14 @@ class ComputePSNR:
             # Save output to output file
             self.output_path.write_text(json.dumps(benchmark_info, indent=4), "utf8")
             CONSOLE.print(f"Saved results to: {self.output_path}")
+
             del pipeline
             del config
+            del benchmark_info
+            del metrics_dict
             torch.cuda.empty_cache()
+            gc.collect()
+            time.sleep(3)
 
 
 def entrypoint():

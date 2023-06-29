@@ -49,11 +49,10 @@ class ViewerConfigWithoutNumRays(ViewerConfig):
 
 @dataclass
 class RunViewer:
+    load_ckpt: Path
     """Load a checkpoint and start the viewer."""
-
-    load_config: Path
+    load_config: Optional[Path] = None
     """Path to config YAML file."""
-    load_ckpt: Optional[Path] = None
     """Model checkpoint"""
     viewer: ViewerConfigWithoutNumRays = field(default_factory=ViewerConfigWithoutNumRays)
     indices_file: Optional[Path] = None
@@ -62,6 +61,10 @@ class RunViewer:
 
     def main(self) -> None:
         """Main function."""
+        if self.load_config is None:
+            parent = self.load_ckpt.parent
+            self.load_config = parent / "config.yml"
+
         if self.indices_file is not None:
             self.dataset_type = "all"
             CONSOLE.log("Setting dataset_type to 'all' because of indices file.")

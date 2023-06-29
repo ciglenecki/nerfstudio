@@ -1,10 +1,61 @@
+import json
 import random
-import string
+import re
 import sys
 from datetime import datetime
-from pathlib import Path
+from pathlib import Path, PurePath
 
 import yaml
+
+
+def get_n_from_dir_name(dir_name: str | Path) -> float | None:
+    azimuth_pattern = r"n_([\d.]+)"
+    if isinstance(dir_name, Path):
+        dir_name = str(dir_name)
+    match = re.search(azimuth_pattern, dir_name)
+    if not match:
+        return None
+    return int(match.group(1))
+
+
+def get_azimuth_from_dir_name(dir_name: str | Path) -> float | None:
+    azimuth_pattern = r"azi_(-?\d+\.\d+)"
+    if isinstance(dir_name, Path):
+        dir_name = str(dir_name)
+    match = re.search(azimuth_pattern, dir_name)
+    if not match:
+        return None
+    return float(match.group(1))
+
+
+def get_angle_from_dir_name(dir_name: str | Path) -> float | None:
+    angle_pattern = r"a_([\d.]+)"
+    if isinstance(dir_name, Path):
+        dir_name = str(dir_name)
+    match = re.search(angle_pattern, dir_name)
+    if not match:
+        return None
+    return float(match.group(1))
+
+
+def metrics_agg_by_angle(image_metrics: dict[str, dict[str, float]]) -> dict:
+    result = {}
+    metrics = list(image_metrics.values())[0].keys()
+    for img_path, metric_dict in image_metrics.items():
+        angle = get_azimuth_from_dir_name(img_path)
+        if angle not in result:
+            result[angle] = {"images": []}
+        result[angle]["images"].append(img_path)
+        for metric in metrics:
+            metric_value = metric_dict[metric]
+            if metric not in result[angle]:
+                result[angle][metric] = []
+            result[angle][metric].append(metric_value)
+    for angle in result:
+        for metric in metrics:
+            result[angle][metric] = sum(result[angle][metric]) / len(result[angle][metric])
+    print(json.dumps(result, indent=4))
+    return result
 
 
 def get_timestamp():

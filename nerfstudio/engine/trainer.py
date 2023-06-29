@@ -70,7 +70,7 @@ class TrainerConfig(ExperimentConfig):
     """Number of steps between randomly sampled batches of rays."""
     steps_per_eval_image: int = 500
     """Number of steps between single eval images."""
-    steps_per_eval_all_images: int = 1000
+    steps_per_eval_all_images: int = 50_000
     """Number of steps between eval all images."""
     max_num_iterations: int = 40_000
     """Maximum number of iterations to run."""
