@@ -47,8 +47,7 @@ from rich.progress import (
 )
 from rich.table import Table
 from torch import Tensor
-from torchtyping import TensorType
-from typing_extensions import Annotated, Literal, TimeRemainingColumn, assert_never
+from typing_extensions import Annotated, Literal
 
 from nerfstudio.cameras.camera_paths import (
     get_interpolated_camera_path,
@@ -75,6 +74,8 @@ from nerfstudio.utils.eval_utils import eval_setup
 from nerfstudio.utils.rich_utils import ItersPerSecColumn
 
 CONSOLE = Console(width=120, no_color=True)
+from tqdm import tqdm
+
 from nerfstudio.data.datamanagers.base_datamanager import VanillaDataManager
 from nerfstudio.data.scene_box import SceneBox
 from nerfstudio.model_components import renderers
@@ -144,7 +145,7 @@ def _render_trajectory_video(
         writer = None
 
         with progress:
-            for camera_idx in progress.track(range(cameras.size), description=""):
+            for camera_idx in progress.track(tqdm(range(cameras.size)), description=""):
                 aabb_box = None
                 if crop_data is not None:
                     bounding_box_min = crop_data.center - crop_data.scale / 2.0
@@ -325,6 +326,8 @@ class BaseRender:
 
     load_config: Path
     """Path to config YAML file."""
+    load_ckpt: Path
+    """Name of the renderer outputs to use. rgb, depth, etc. concatenates them along y axis"""
     output_path: Path = Path("renders/output.mp4")
     """Path to output video file."""
     image_format: Literal["jpeg", "png"] = "jpeg"
@@ -337,6 +340,7 @@ class BaseRender:
     """Specifies number of rays per chunk during eval. If None, use the value in the config file."""
     colormap_options: colormaps.ColormapOptions = colormaps.ColormapOptions()
     """Colormap options."""
+    use_crop: bool = True
 
 
 @dataclass
@@ -349,13 +353,16 @@ class RenderCameraPath(BaseRender):
     """Filename of the camera path to render."""
     output_format: Literal["images", "video"] = "video"
     """How to save output data."""
+    indices_file: Optional[Path] = None
 
     def main(self) -> None:
         """Main function."""
         _, pipeline, _, _ = eval_setup(
             self.load_config,
             eval_num_rays_per_chunk=self.eval_num_rays_per_chunk,
-            test_mode="inference",
+            test_mode="test",
+            load_ckpt=self.load_ckpt,
+            indices_file=self.indices_file,
         )
 
         install_checks.check_ffmpeg_installed()
@@ -363,7 +370,10 @@ class RenderCameraPath(BaseRender):
         with open(self.camera_path_filename, "r", encoding="utf-8") as f:
             camera_path = json.load(f)
         seconds = camera_path["seconds"]
-        crop_data = get_crop_from_json(camera_path)
+        if self.use_crop:
+            crop_data = get_crop_from_json(camera_path)
+        else:
+            crop_data = None
         camera_path = get_path_from_json(camera_path)
 
         if camera_path.camera_type[0] == CameraType.OMNIDIRECTIONALSTEREO_L.value:
@@ -465,6 +475,8 @@ class RenderInterpolated(BaseRender):
             self.load_config,
             eval_num_rays_per_chunk=self.eval_num_rays_per_chunk,
             test_mode="test",
+            load_ckpt=self.load_ckpt,
+            indices_file=self.indices_file,
         )
 
         install_checks.check_ffmpeg_installed()

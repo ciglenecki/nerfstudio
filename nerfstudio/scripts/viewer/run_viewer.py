@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Literal, Optional, Tuple
 
 import tyro
+from rich.progress import Console
 
 from nerfstudio.configs.base_config import ViewerConfig
 from nerfstudio.configs.method_configs import AnnotatedBaseConfigUnion
@@ -34,6 +35,8 @@ from nerfstudio.scripts.my_utils import get_step_from_ckpt_path
 from nerfstudio.utils import writer
 from nerfstudio.utils.eval_utils import eval_setup
 from nerfstudio.viewer.server.viewer_state import ViewerState
+
+CONSOLE = Console(width=120)
 
 
 @dataclass
