@@ -75,7 +75,7 @@ class RunViewer:
         config, pipeline, _, step = eval_setup(
             self.load_config,
             eval_num_rays_per_chunk=None,
-            test_mode="test",
+            test_mode="val",
             load_ckpt=self.load_ckpt,
             indices_file=self.indices_file,
         )

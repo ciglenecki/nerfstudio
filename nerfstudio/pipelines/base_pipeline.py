@@ -386,6 +386,7 @@ class VanillaPipeline(Pipeline):
                 # metrics_dict["split"] = "test" if is_test else "eval"
 
                 metrics_dict_dict["images"][image_filename] = metrics_dict
+                print(metrics_dict)
                 progress.advance(task)
 
         self.train()

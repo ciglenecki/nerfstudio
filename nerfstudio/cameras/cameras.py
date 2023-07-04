@@ -461,6 +461,17 @@ class Cameras(TensorDataclass):
         if keep_shape is False:
             raybundle = raybundle.flatten()
 
+        # TODO: matej dodao sam aabb_box varijablu ovdje
+        # aabb_box = SceneBox(
+        #     aabb=torch.tensor(
+        #         [
+        #             [-1, 0.7, -0.4],
+        #             [1, 1.5, 0.4],
+        #         ],
+        #         dtype=torch.float32,
+        #     )
+        # )
+
         if aabb_box:
             with torch.no_grad():
                 tensor_aabb = Parameter(aabb_box.aabb.flatten(), requires_grad=False)
