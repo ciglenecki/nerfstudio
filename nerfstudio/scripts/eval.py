@@ -60,7 +60,7 @@ class ComputePSNR:
                 load_ckpt=self.load_ckpt,
                 indices_file=None,
             )
-            out_name = f"{checkpoint_path.stem}_metrics_{split}_{self.experiment_suffix}.json"
+            out_name = f"{checkpoint_path.stem}_metrics_{split}_{self.experiment_suffix}_strictbox.json"
             self.output_path = Path(self.load_ckpt.parent, out_name)
             assert self.output_path.suffix == ".json"
             self.output_path.parent.mkdir(parents=True, exist_ok=True)
