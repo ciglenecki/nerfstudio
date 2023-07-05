@@ -360,7 +360,7 @@ class RenderCameraPath(BaseRender):
         _, pipeline, _, _ = eval_setup(
             self.load_config,
             eval_num_rays_per_chunk=self.eval_num_rays_per_chunk,
-            test_mode="test",
+            test_mode="val",
             load_ckpt=self.load_ckpt,
             indices_file=self.indices_file,
         )
