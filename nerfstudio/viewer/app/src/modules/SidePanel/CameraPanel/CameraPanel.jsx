@@ -317,9 +317,9 @@ function CameraList(props) {
 
   const handleChange =
     (cameraUUID: string) =>
-    (event: React.SyntheticEvent, isExpanded: boolean) => {
-      setExpanded(isExpanded ? cameraUUID : false);
-    };
+      (event: React.SyntheticEvent, isExpanded: boolean) => {
+        setExpanded(isExpanded ? cameraUUID : false);
+      };
 
   const set_transform_controls = (index) => {
     // camera helper object so grab the camera inside
@@ -558,7 +558,7 @@ export default function CameraPanel(props) {
   const viser_websocket = useContext(ViserWebSocketContext);
   const throttled_time_message_sender =
     makeThrottledMessageSender(viser_websocket);
-  const DEFAULT_FOV = 50;
+  const DEFAULT_FOV = 55;
   const DEFAULT_RENDER_TIME = 0.0;
 
   // react state
@@ -738,7 +738,7 @@ export default function CameraPanel(props) {
     // prevent multiple loops
     if (update_cameras_interval === null) {
       // hardcoded for 100 ms per update
-      update_cameras_interval = setInterval(() => {}, 100);
+      update_cameras_interval = setInterval(() => { }, 100);
     }
   });
   // eslint-disable-next-line no-unused-vars
@@ -934,7 +934,7 @@ export default function CameraPanel(props) {
       }, 1000 / fps);
       return () => clearInterval(interval);
     }
-    return () => {};
+    return () => { };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [is_playing]);
 

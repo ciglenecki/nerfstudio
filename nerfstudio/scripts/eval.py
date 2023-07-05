@@ -45,6 +45,7 @@ class ComputePSNR:
     # Path to config YAML file.
     load_config: Path
     # Checkpoint path
+    experiment_suffix: str
     load_ckpt: Path
     # Name of the output file.
     output_path: Path = Path("output.json")
@@ -59,7 +60,7 @@ class ComputePSNR:
                 load_ckpt=self.load_ckpt,
                 indices_file=None,
             )
-            out_name = f"{checkpoint_path.stem}_metrics_{split}.json"
+            out_name = f"{checkpoint_path.stem}_metrics_{split}_{self.experiment_suffix}.json"
             self.output_path = Path(self.load_ckpt.parent, out_name)
             assert self.output_path.suffix == ".json"
             self.output_path.parent.mkdir(parents=True, exist_ok=True)

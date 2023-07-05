@@ -70,8 +70,10 @@ class NerfstudioDataParserConfig(DataParserConfig):
     """The percent of images to use for training. The remaining images are for eval."""
     depth_unit_scale_factor: float = 1e-3
     """Scales the depth values to meters. Default value is 0.001 for a millimeter to meter conversion."""
+
     # TODO matej
     indices_file: Optional[Path] = None
+    use_scene_aabb: bool = False
 
 
 @dataclass
@@ -315,9 +317,15 @@ class Nerfstudio(DataParser):
 
         # in x,y,z order
         # assumes that the scene is centered at the origin
+
         aabb_scale = self.config.scene_scale
+
         scene_box = SceneBox(
             aabb=torch.tensor(
+                # [
+                #     [-1, 0.7, -0.4],
+                #     [1, 1.5, 0.4],
+                # ],
                 [
                     [-aabb_scale, -aabb_scale, -aabb_scale],
                     [aabb_scale, aabb_scale, aabb_scale],

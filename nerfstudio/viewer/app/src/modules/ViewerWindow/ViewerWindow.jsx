@@ -251,7 +251,7 @@ export default function ViewerWindow(props) {
     const fov = Math.atan(1 / fl_new) / (Math.PI / 360);
     sceneTree.metadata.camera.fov = fov;
   } else {
-    sceneTree.metadata.camera.fov = 50;
+    sceneTree.metadata.camera.fov = 55;
   }
 
   let old_camera_matrix = null;
@@ -321,7 +321,7 @@ export default function ViewerWindow(props) {
   );
   useEffect(() => {
     const onMouseDouble = (e) => {
-      const BANNER_HEIGHT = parseInt(variables.bannerHeight,10);
+      const BANNER_HEIGHT = parseInt(variables.bannerHeight, 10);
 
       const mouseVector = new THREE.Vector2();
       mouseVector.x = 2 * (e.clientX / size.x) - 1;
@@ -333,7 +333,7 @@ export default function ViewerWindow(props) {
         mouseVector.y > 1 ||
         mouseVector.y < -1
       );
-      if (!mouse_in_scene) { return; } 
+      if (!mouse_in_scene) { return; }
 
       const raycaster = new THREE.Raycaster();
       raycaster.setFromCamera(mouseVector, sceneTree.metadata.camera);
@@ -341,13 +341,13 @@ export default function ViewerWindow(props) {
       throttledClickSender({
         type: 'ClickMessage',
         origin: [
-          raycaster.ray.origin.x, 
-          raycaster.ray.origin.y, 
+          raycaster.ray.origin.x,
+          raycaster.ray.origin.y,
           raycaster.ray.origin.z
         ],
         direction: [
-          raycaster.ray.direction.x, 
-          raycaster.ray.direction.y, 
+          raycaster.ray.direction.x,
+          raycaster.ray.direction.y,
           raycaster.ray.direction.z
         ],
       });
